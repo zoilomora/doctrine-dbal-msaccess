@@ -1,0 +1,6 @@
+parameters:
+  level: 5
+  paths:
+    - src
+  ignoreErrors:
+    - '#qualifier of function odbc_columns expects string#'

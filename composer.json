@@ -1,0 +1,27 @@
+{
+    "name": "zoilomora/doctrine-dbal-msaccess",
+    "description": "Doctrine DBAL implementation for Microsoft Access",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^7.4",
+        "ext-pdo": "*",
+        "ext-odbc": "*",
+        "doctrine/dbal": "^2.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZoiloMora\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ZoiloMora\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "pccomponentes/coding-standard": "^1.2",
+        "phpunit/phpunit": "^9.4",
+        "phpstan/phpstan": "^0.12.56"
+    }
+}

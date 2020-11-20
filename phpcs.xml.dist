@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<ruleset name="Project rules">
+    <file>src</file>
+    <file>tests</file>
+    <rule ref="vendor/pccomponentes/coding-standard/src/ruleset.xml">
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
+        <exclude name="SlevomatCodingStandard.PHP.DisallowReference.DisallowedPassingByReference" />
+        <exclude name="SlevomatCodingStandard.ControlStructures.BlockControlStructureSpacing.IncorrectLinesCountAfterControlStructure" />
+        <exclude name="SlevomatCodingStandard.ControlStructures.BlockControlStructureSpacing.IncorrectLinesCountBeforeControlStructure" />
+    </rule>
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+</ruleset>
