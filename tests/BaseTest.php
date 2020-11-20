@@ -9,6 +9,21 @@ use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Driver;
 
 abstract class BaseTest extends TestCase
 {
+    protected function filename(): string
+    {
+        return 'default.mdb';
+    }
+
+    protected function dsn(): string
+    {
+        return 'dbal-msaccess';
+    }
+
+    protected function driverOptions(): array
+    {
+        return [];
+    }
+
     public function connections(): \Iterator
     {
         if (false === $this->isMicrosoftWindows()) {
@@ -19,7 +34,8 @@ abstract class BaseTest extends TestCase
 
         $params = [
             'driverClass' => Driver::class,
-            'dsn' => 'dbal-msaccess',
+            'dsn' => $this->dsn(),
+            'driverOptions' => $this->driverOptions(),
         ];
 
         $connection = DriverManager::getConnection($params);
@@ -28,7 +44,11 @@ abstract class BaseTest extends TestCase
             $connection->connect();
         } catch (\Doctrine\DBAL\Exception $exception) {
             throw new \Exception(
-                "You should create a DSN pointing to 'var\database.mdb' called 'dbal-msaccess'",
+                \sprintf(
+                    "You should create a DSN pointing to 'var\%s' called '%s'",
+                    $this->filename(),
+                    $this->dsn()
+                ),
             );
         }
 
@@ -45,8 +65,8 @@ abstract class BaseTest extends TestCase
         $ds = \DIRECTORY_SEPARATOR;
         $root = __DIR__ . $ds . '..' . $ds;
 
-        $source = $root . 'tests' . $ds . 'database.mdb';
-        $dest = $root . 'var' . $ds . 'database.mdb';
+        $source = $root . 'tests' . $ds . 'Databases' . $ds . $this->filename();
+        $dest = $root . 'var' . $ds . $this->filename();
 
         \copy($source, $dest);
 

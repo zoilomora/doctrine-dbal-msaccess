@@ -5,6 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.4",
+        "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-odbc": "*",
         "doctrine/dbal": "^2.12"
