@@ -37,7 +37,22 @@ The default character encoding in Access databases is [Windows-1252](https://en.
 If you want to convert the data to UTF-8, a simple solution would be:
 
 ```php
-$field = mb_convert_encoding($field, 'UTF-8', 'Windows-1252');
+$field = \mb_convert_encoding($field, 'UTF-8', 'Windows-1252');
+```
+
+If you want all the data to be encoded automatically to UTF-8 (with the performance reduction that it may imply)
+configure the driver as follows:
+
+```php
+$connection = \Doctrine\DBAL\DriverManager::getConnection(
+    [
+        'driverClass' => \ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Driver::class,
+        'dsn' => 'name of the created dsn',
+        'driverOptions' => [
+            'charset' => 'UTF-8',
+        ],
+    ]
+);
 ```
 
 ## License

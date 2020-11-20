@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\PDO;
 
 use Doctrine\DBAL\Driver\PDO\Connection as PDOConnection;
-use Doctrine\DBAL\Driver\PDO\SQLSrv\Statement;
+use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Statement;
 
 final class Connection extends PDOConnection
 {
@@ -18,7 +18,11 @@ final class Connection extends PDOConnection
             \PDO::ATTR_STATEMENT_CLASS,
             [
                 Statement::class,
-                [],
+                [
+                    true === \array_key_exists('charset', $options)
+                        ? $options['charset']
+                        : null
+                ],
             ],
         );
     }
