@@ -10,23 +10,6 @@ class StatementTest extends BaseTest
 {
     private const TABLE_NAME = 'test';
 
-    protected function filename(): string
-    {
-        return 'Iurie-popovt-test.accdb';
-    }
-
-    protected function dsn(): string
-    {
-        return 'Iurie-popovt-test';
-    }
-
-    protected function driverOptions(): array
-    {
-        return [
-            'charset' => 'UTF-8',
-        ];
-    }
-
     /**
      * @test
      * @dataProvider connections
@@ -42,5 +25,39 @@ class StatementTest extends BaseTest
         $item = $result->fetchAllAssociative()[0];
 
         $this->assertSame('Matériel Prêt un mail est envoyé', $item['note']);
+    }
+
+    /**
+     * @test
+     * @dataProvider connections
+     */
+    public function given_a_french_database_when_try_to_get_an_offset_then_throw_exception(Connection $connection)
+    {
+        $this->expectException(\Doctrine\DBAL\Exception::class);
+        $this->expectExceptionMessage('Platform msaccess does not support offset values in limit queries.');
+
+        $connection
+            ->createQueryBuilder()
+            ->select('note')
+            ->from(self::TABLE_NAME)
+            ->setFirstResult(2)
+            ->execute();
+    }
+
+    protected function filename(): string
+    {
+        return 'Iurie-popovt-test.accdb';
+    }
+
+    protected function dsn(): string
+    {
+        return 'Iurie-popovt-test';
+    }
+
+    protected function driverOptions(): array
+    {
+        return [
+            'charset' => 'UTF-8',
+        ];
     }
 }

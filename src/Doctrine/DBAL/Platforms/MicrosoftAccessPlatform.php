@@ -8,11 +8,25 @@ use ZoiloMora\Doctrine\DBAL\Platforms\Keywords\MicrosoftAccessKeywords;
 
 final class MicrosoftAccessPlatform extends SQLServer2012Platform
 {
+    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::getName */
+    public function getName(): string
+    {
+        return 'msaccess';
+    }
+
+    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints */
     public function supportsForeignKeyConstraints()
     {
         return false;
     }
 
+    /** @link \Doctrine\DBAL\Platforms\SQLServer2005Platform::supportsLimitOffset */
+    public function supportsLimitOffset()
+    {
+        return false;
+    }
+
+    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::initializeDoctrineTypeMappings */
     protected function initializeDoctrineTypeMappings()
     {
         $this->doctrineTypeMapping = [
@@ -31,6 +45,7 @@ final class MicrosoftAccessPlatform extends SQLServer2012Platform
         ];
     }
 
+    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::getReservedKeywordsClass */
     protected function getReservedKeywordsClass(): string
     {
         return MicrosoftAccessKeywords::class;

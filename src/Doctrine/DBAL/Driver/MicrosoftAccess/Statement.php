@@ -21,16 +21,16 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
         switch ($type) {
             case ParameterType::LARGE_OBJECT:
             case ParameterType::BINARY:
-                if ($driverOptions === null) {
+                if (null === $driverOptions) {
                     $driverOptions = \PDO::SQLSRV_ENCODING_BINARY;
                 }
 
                 break;
-
             case ParameterType::ASCII:
-                $type          = ParameterType::STRING;
-                $length        = 0;
+                $type = ParameterType::STRING;
+                $length = 0;
                 $driverOptions = \PDO::SQLSRV_ENCODING_SYSTEM;
+
                 break;
         }
 
@@ -45,42 +45,42 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
     public function fetchOne()
     {
         return $this->convertStringEncoding(
-            parent::fetchOne()
+            parent::fetchOne(),
         );
     }
 
     public function fetchNumeric()
     {
         return $this->convertArrayEncoding(
-            parent::fetchNumeric()
+            parent::fetchNumeric(),
         );
     }
 
     public function fetchAssociative()
     {
         return $this->convertArrayEncoding(
-            parent::fetchAssociative()
+            parent::fetchAssociative(),
         );
     }
 
     public function fetchAllNumeric(): array
     {
         return $this->convertCollectionEncoding(
-            parent::fetchAllNumeric()
+            parent::fetchAllNumeric(),
         );
     }
 
     public function fetchFirstColumn(): array
     {
         return $this->convertArrayEncoding(
-            parent::fetchFirstColumn()
+            parent::fetchFirstColumn(),
         );
     }
 
     public function fetchAllAssociative(): array
     {
         return $this->convertCollectionEncoding(
-            parent::fetchAllAssociative()
+            parent::fetchAllAssociative(),
         );
     }
 
@@ -90,7 +90,7 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
             $items,
             function (&$item) {
                 $item = $this->convertArrayEncoding($item);
-            }
+            },
         );
 
         return $items;
@@ -98,7 +98,7 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
 
     private function convertArrayEncoding(array $items): array
     {
-        foreach ($items as $key => $value) {
+        foreach (\array_keys($items) as $key) {
             $items[$key] = $this->convertStringEncoding($items[$key]);
         }
 
