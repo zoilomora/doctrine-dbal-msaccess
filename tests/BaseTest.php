@@ -9,21 +9,6 @@ use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Driver;
 
 abstract class BaseTest extends TestCase
 {
-    protected function filename(): string
-    {
-        return 'default.mdb';
-    }
-
-    protected function dsn(): string
-    {
-        return 'dbal-msaccess';
-    }
-
-    protected function driverOptions(): array
-    {
-        return [];
-    }
-
     public function connections(): \Iterator
     {
         if (false === $this->isMicrosoftWindows()) {
@@ -47,12 +32,27 @@ abstract class BaseTest extends TestCase
                 \sprintf(
                     "You should create a DSN pointing to 'var\%s' called '%s'",
                     $this->filename(),
-                    $this->dsn()
+                    $this->dsn(),
                 ),
             );
         }
 
         yield [$connection];
+    }
+
+    protected function filename(): string
+    {
+        return 'default.mdb';
+    }
+
+    protected function dsn(): string
+    {
+        return 'dbal-msaccess';
+    }
+
+    protected function driverOptions(): array
+    {
+        return [];
     }
 
     private function isMicrosoftWindows(): bool

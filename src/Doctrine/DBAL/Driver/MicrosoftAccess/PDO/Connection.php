@@ -21,7 +21,7 @@ final class Connection extends PDOConnection
                 [
                     true === \array_key_exists('charset', $options)
                         ? $options['charset']
-                        : null
+                        : null,
                 ],
             ],
         );
