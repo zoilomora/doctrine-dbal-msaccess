@@ -50,4 +50,28 @@ final class MicrosoftAccessPlatform extends SQLServer2012Platform
     {
         return MicrosoftAccessKeywords::class;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDateTimeFormatString()
+    {
+        return 'Y-m-d H:i';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDateFormatString()
+    {
+        return 'Y-m-d';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTimeFormatString()
+    {
+        return 'H:i:s';
+    }
 }
