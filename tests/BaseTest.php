@@ -19,7 +19,6 @@ abstract class BaseTest extends TestCase
 
         $params = [
             'driverClass' => Driver::class,
-            'dsn' => $this->dsn(),
             'driverOptions' => $this->driverOptions(),
         ];
 
@@ -52,7 +51,9 @@ abstract class BaseTest extends TestCase
 
     protected function driverOptions(): array
     {
-        return [];
+        return [
+            'dsn' => $this->dsn(),
+        ];
     }
 
     private function isMicrosoftWindows(): bool

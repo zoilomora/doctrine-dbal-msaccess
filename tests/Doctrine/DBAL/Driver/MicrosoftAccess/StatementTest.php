@@ -56,8 +56,11 @@ class StatementTest extends BaseTest
 
     protected function driverOptions(): array
     {
-        return [
-            'charset' => 'UTF-8',
-        ];
+        return \array_merge(
+            parent::driverOptions(),
+            [
+                'charset' => 'UTF-8',
+            ],
+        );
     }
 }

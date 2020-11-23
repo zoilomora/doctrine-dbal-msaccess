@@ -8,47 +8,28 @@ use ZoiloMora\Doctrine\DBAL\Platforms\Keywords\MicrosoftAccessKeywords;
 
 final class MicrosoftAccessPlatform extends SQLServer2012Platform
 {
-    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::getName */
+    /**
+     * {@inheritDoc}
+     */
     public function getName(): string
     {
         return 'msaccess';
     }
 
-    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints */
+    /**
+     * {@inheritDoc}
+     */
     public function supportsForeignKeyConstraints()
     {
         return false;
     }
 
-    /** @link \Doctrine\DBAL\Platforms\SQLServer2005Platform::supportsLimitOffset */
+    /**
+     * {@inheritDoc}
+     */
     public function supportsLimitOffset()
     {
         return false;
-    }
-
-    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::initializeDoctrineTypeMappings */
-    protected function initializeDoctrineTypeMappings()
-    {
-        $this->doctrineTypeMapping = [
-            'bit' => 'boolean',
-            'byte' => 'boolean',
-            'counter' => 'bigint',
-            'currency' => 'decimal',
-            'datetime' => 'datetime',
-            'double' => 'float',
-            'integer' => 'integer',
-            'longbinary' => 'binary',
-            'longchar' => 'text',
-            'real' => 'float',
-            'smallint' => 'smallint',
-            'varchar' => 'string',
-        ];
-    }
-
-    /** @link \Doctrine\DBAL\Platforms\AbstractPlatform::getReservedKeywordsClass */
-    protected function getReservedKeywordsClass(): string
-    {
-        return MicrosoftAccessKeywords::class;
     }
 
     /**
@@ -73,5 +54,34 @@ final class MicrosoftAccessPlatform extends SQLServer2012Platform
     public function getTimeFormatString()
     {
         return 'H:i:s';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function initializeDoctrineTypeMappings()
+    {
+        $this->doctrineTypeMapping = [
+            'bit' => 'boolean',
+            'byte' => 'boolean',
+            'counter' => 'bigint',
+            'currency' => 'decimal',
+            'datetime' => 'datetime',
+            'double' => 'float',
+            'integer' => 'integer',
+            'longbinary' => 'binary',
+            'longchar' => 'text',
+            'real' => 'float',
+            'smallint' => 'smallint',
+            'varchar' => 'string',
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getReservedKeywordsClass(): string
+    {
+        return MicrosoftAccessKeywords::class;
     }
 }

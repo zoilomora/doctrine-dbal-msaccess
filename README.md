@@ -5,7 +5,7 @@ There are some functionalities that are not supported by Microsoft Access in a P
 
 ## OS Requirements
 - Microsoft Access Database Engine Redistributable ([2010](https://www.microsoft.com/download/details.aspx?id=13255) or [2016](https://www.microsoft.com/download/details.aspx?id=54920)).
-- Register a **DSN** in **ODBC Data Source Administrator** (odbcad32.exe).
+- Register a **DSN** in **ODBC Data Source Administrator** `odbcad32.exe`.
 
 ## Installation
 

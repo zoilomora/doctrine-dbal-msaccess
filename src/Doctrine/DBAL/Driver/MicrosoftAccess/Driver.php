@@ -23,7 +23,7 @@ final class Driver implements \Doctrine\DBAL\Driver
         $password = null,
         array $driverOptions = []
     ): \Doctrine\DBAL\Driver\Connection {
-        $this->assertRequiredParameters($driverOptions);
+        $this->assertRequiredDriverOptions($driverOptions);
 
         try {
             $conn = new PDOConnection(
@@ -62,49 +62,25 @@ final class Driver implements \Doctrine\DBAL\Driver
         return new MicrosoftAccessSchemaManager($conn, $this->odbcConnection);
     }
 
-    /**
-     * @param array $driverOptions
-     * @throws \Exception
-     */
-    private function assertRequiredParameters(array $driverOptions): void
+    private function assertRequiredDriverOptions(array $driverOptions): void
     {
-        $dsn = $this->getDsn($driverOptions);
-
-        if ($dsn === null) {
+        if (false === \array_key_exists('dsn', $driverOptions)) {
             throw new Exception\InvalidArgumentException("The driver option 'dsn' is mandatory");
         }
     }
 
-    /**
-     * Get the DSN for the PDO connection.
-     *
-     * @param array $driverOptions
-     * @return string
-     */
     protected function constructPdoDsn(array $driverOptions): string
     {
         return 'odbc:' . $this->getDsn($driverOptions);
     }
 
-    /**
-     * Get the DSN for the ODBC connection.
-     *
-     * @param array $driverOptions
-     * @return string
-     */
     protected function constructOdbcDsn(array $driverOptions): string
     {
         return $this->getDsn($driverOptions);
     }
 
-    /**
-     * Get the DSN by the driver's parameters and options
-     *
-     * @param array $driverOptions
-     * @return string|null
-     */
-    private function getDsn(array $driverOptions): ?string
+    private function getDsn(array $driverOptions): string
     {
-        return $driverOptions['dsn'] ?? null;
+        return $driverOptions['dsn'];
     }
 }
