@@ -25,7 +25,9 @@ Once the DSN is configured we will have to configure the connection in the follo
 $connection = \Doctrine\DBAL\DriverManager::getConnection(
     [
         'driverClass' => \ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Driver::class,
-        'dsn' => 'name of the created dsn',
+        'driverOptions' => [
+            'dsn' => 'name of the created dsn',
+        ],
     ]
 );
 ```
@@ -47,8 +49,8 @@ configure the driver as follows:
 $connection = \Doctrine\DBAL\DriverManager::getConnection(
     [
         'driverClass' => \ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Driver::class,
-        'dsn' => 'name of the created dsn',
         'driverOptions' => [
+            'dsn' => 'name of the created dsn',
             'charset' => 'UTF-8',
         ],
     ]

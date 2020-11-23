@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use PDOException;
 use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\PDO\Connection as PDOConnection;
 use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\ODBC\Connection as ODBCConnection;
 use ZoiloMora\Doctrine\DBAL\Platforms\MicrosoftAccessPlatform;
@@ -21,19 +23,19 @@ final class Driver implements \Doctrine\DBAL\Driver
         $password = null,
         array $driverOptions = []
     ): \Doctrine\DBAL\Driver\Connection {
-        $this->assertRequiredParameters($params);
+        $this->assertRequiredParameters($driverOptions);
 
         try {
             $conn = new PDOConnection(
-                $this->constructPdoDsn($params),
+                $this->constructPdoDsn($driverOptions),
                 $username,
                 $password,
                 $driverOptions,
             );
             $this->odbcConnection = new ODBCConnection(
-                $this->constructOdbcDsn($params),
+                $this->constructOdbcDsn($driverOptions),
             );
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw Exception::driverException($this, $e);
         }
 
@@ -45,7 +47,7 @@ final class Driver implements \Doctrine\DBAL\Driver
         return 'pdo_msaccess';
     }
 
-    public function getDatabase(\Doctrine\DBAL\Connection $conn): string
+    public function getDatabase(Connection $conn): string
     {
         return 'unknown';
     }
@@ -55,37 +57,54 @@ final class Driver implements \Doctrine\DBAL\Driver
         return new MicrosoftAccessPlatform();
     }
 
-    public function getSchemaManager(\Doctrine\DBAL\Connection $conn): AbstractSchemaManager
+    public function getSchemaManager(Connection $conn): AbstractSchemaManager
     {
         return new MicrosoftAccessSchemaManager($conn, $this->odbcConnection);
     }
 
-    private function assertRequiredParameters(array $params): void
+    /**
+     * @param array $driverOptions
+     * @throws \Exception
+     */
+    private function assertRequiredParameters(array $driverOptions): void
     {
-        if (false === \array_key_exists('dsn', $params)) {
-            throw new \Exception("The parameter 'dsn' is mandatory");
+        $dsn = $this->getDsn($driverOptions);
+
+        if ($dsn === null) {
+            throw new Exception\InvalidArgumentException("The driver option 'dsn' is mandatory");
         }
     }
 
-    protected function constructPdoDsn(array $params): string
+    /**
+     * Get the DSN for the PDO connection.
+     *
+     * @param array $driverOptions
+     * @return string
+     */
+    protected function constructPdoDsn(array $driverOptions): string
     {
-        $dsn = 'odbc:';
-
-        if (isset($params['dsn']) && '' !== $params['dsn']) {
-            return $dsn . $params['dsn'];
-        }
-
-        return $dsn;
+        return 'odbc:' . $this->getDsn($driverOptions);
     }
 
-    protected function constructOdbcDsn(array $params): string
+    /**
+     * Get the DSN for the ODBC connection.
+     *
+     * @param array $driverOptions
+     * @return string
+     */
+    protected function constructOdbcDsn(array $driverOptions): string
     {
-        $dsn = '';
+        return $this->getDsn($driverOptions);
+    }
 
-        if (isset($params['dsn']) && '' !== $params['dsn']) {
-            return $dsn . $params['dsn'];
-        }
-
-        return $dsn;
+    /**
+     * Get the DSN by the driver's parameters and options
+     *
+     * @param array $driverOptions
+     * @return string|null
+     */
+    private function getDsn(array $driverOptions): ?string
+    {
+        return $driverOptions['dsn'] ?? null;
     }
 }
