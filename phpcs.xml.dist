@@ -11,4 +11,7 @@
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
+    <rule ref="SlevomatCodingStandard.Operators.RequireOnlyStandaloneIncrementAndDecrementOperators.PostDecrementOperatorNotUsedStandalone">
+        <exclude-pattern>src/Doctrine/DBAL/Platforms/MicrosoftAccessPlatform.php</exclude-pattern>
+    </rule>
 </ruleset>
