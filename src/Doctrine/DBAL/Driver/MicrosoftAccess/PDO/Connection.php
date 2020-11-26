@@ -3,36 +3,42 @@ declare(strict_types=1);
 
 namespace ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\PDO;
 
-use Doctrine\DBAL\Driver\PDO\Connection as PDOConnection;
+use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
+use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
+use Doctrine\DBAL\ParameterType;
+use PDO;
+use PDOStatement;
 use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Statement;
 
-final class Connection extends PDOConnection
+final class Connection extends PDO implements ConnectionInterface, ServerInfoAwareConnection
 {
     private ?bool $transactionsSupport = null;
+    private ?string $charsetToEncoding = null;
 
-    public function __construct($dsn, $user = null, $password = null, $options = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($dsn, $user = null, $password = null, ?array $options = null)
     {
-        parent::__construct($dsn, $user, $password, $options);
+        parent::__construct($dsn, (string)$user, (string)$password, (array)$options);
 
-        $this->setAttribute(
-            \PDO::ATTR_STATEMENT_CLASS,
-            [
-                Statement::class,
-                [
-                    true === \array_key_exists('charset', $options)
-                        ? $options['charset']
-                        : null,
-                ],
-            ],
-        );
+        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, [Statement::class, []]);
+        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $this->charsetToEncoding = \array_key_exists('charset', $options)
+            ? $options['charset']
+            : null;
     }
 
-    public function lastInsertId($name = null): string
+    public function getServerVersion(): string
     {
-        return '0';
+        return PDO::getAttribute(PDO::ATTR_SERVER_VERSION);
     }
 
-    public function quote($value, $type = \PDO::PARAM_STR)
+    /**
+     * {@inheritdoc}
+     */
+    public function quote($value, $type = ParameterType::STRING)
     {
         $val = parent::quote($value, $type);
 
@@ -44,25 +50,68 @@ final class Connection extends PDOConnection
         return $val;
     }
 
-    public function beginTransaction()
+    /**
+     * {@inheritdoc}
+     */
+    public function lastInsertId($name = null): string
+    {
+        return '0';
+    }
+
+    public function requiresQueryForServerVersion(): bool
+    {
+        return false;
+    }
+
+    public function beginTransaction(): bool
     {
         return true === $this->transactionsSupported()
             ? parent::beginTransaction()
             : $this->exec('BEGIN TRANSACTION');
     }
 
-    public function commit()
+    public function commit(): bool
     {
         return true === $this->transactionsSupported()
             ? parent::commit()
             : $this->exec('COMMIT TRANSACTION');
     }
 
-    public function rollback()
+    public function rollback(): bool
     {
         return true === $this->transactionsSupported()
             ? parent::rollback()
             : $this->exec('ROLLBACK TRANSACTION');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function query(...$args): PDOStatement
+    {
+        $statement = parent::query(...$args);
+
+        \assert($statement instanceof Statement);
+        $statement->setCharsetToEncoding($this->charsetToEncoding);
+
+        return $statement;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepare($statement, $options = null)
+    {
+        if (null === $options) {
+            $options = [];
+        }
+
+        $statement = parent::prepare($statement, $options);
+
+        \assert($statement instanceof Statement);
+        $statement->setCharsetToEncoding($this->charsetToEncoding);
+
+        return $statement;
     }
 
     private function transactionsSupported(): bool

@@ -14,8 +14,9 @@ class MicrosoftAccessPlatformTest extends BaseTest
      * @test
      * @dataProvider connections
      */
-    public function given_an_connection_when_get_the_first_two_rows_then_returns_array_with_two_rows(Connection $connection)
-    {
+    public function given_an_connection_when_get_the_first_two_rows_then_returns_array_with_two_rows(
+        Connection $connection
+    ) {
         $result = $connection->createQueryBuilder()
             ->select('*')
             ->from(self::TABLE_NAME)
