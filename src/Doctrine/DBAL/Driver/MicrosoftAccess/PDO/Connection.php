@@ -13,6 +13,7 @@ use ZoiloMora\Doctrine\DBAL\Driver\MicrosoftAccess\Statement;
 final class Connection extends PDO implements ConnectionInterface, ServerInfoAwareConnection
 {
     private ?bool $transactionsSupport = null;
+    private ?string $charsetToEncoding = null;
 
     /**
      * {@inheritdoc}
@@ -21,18 +22,12 @@ final class Connection extends PDO implements ConnectionInterface, ServerInfoAwa
     {
         parent::__construct($dsn, (string)$user, (string)$password, (array)$options);
 
-        $this->setAttribute(
-            PDO::ATTR_STATEMENT_CLASS,
-            [
-                Statement::class,
-                [
-                    true === \array_key_exists('charset', $options)
-                        ? $options['charset']
-                        : null,
-                ],
-            ],
-        );
+        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, [Statement::class, []]);
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $this->charsetToEncoding = \array_key_exists('charset', $options)
+            ? $options['charset']
+            : null;
     }
 
     public function getServerVersion(): string
@@ -94,7 +89,29 @@ final class Connection extends PDO implements ConnectionInterface, ServerInfoAwa
      */
     public function query(...$args): PDOStatement
     {
-        return parent::query(...$args);
+        $statement = parent::query(...$args);
+
+        \assert($statement instanceof Statement);
+        $statement->setCharsetToEncoding($this->charsetToEncoding);
+
+        return $statement;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepare($statement, $options = null)
+    {
+        if (null === $options) {
+            $options = [];
+        }
+
+        $statement = parent::prepare($statement, $options);
+
+        \assert($statement instanceof Statement);
+        $statement->setCharsetToEncoding($this->charsetToEncoding);
+
+        return $statement;
     }
 
     private function transactionsSupported(): bool

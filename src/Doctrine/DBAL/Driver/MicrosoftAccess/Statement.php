@@ -7,14 +7,9 @@ use Doctrine\DBAL\ParameterType;
 
 final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
 {
-    private const FROM_ENCODING = 'Windows-1252';
+    private const CHARSET_FROM_ENCODING = 'Windows-1252';
 
-    private ?string $charset;
-
-    protected function __construct(?string $charset = null)
-    {
-        $this->charset = $charset;
-    }
+    private ?string $charsetToEncoding = null;
 
     public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null, $driverOptions = null)
     {
@@ -37,9 +32,9 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
         return parent::bindParam($param, $variable, $type, $length, $driverOptions);
     }
 
-    public function bindValue($param, $value, $type = ParameterType::STRING)
+    public function setCharsetToEncoding(?string $charset): void
     {
-        return $this->bindParam($param, $value, $type);
+        $this->charsetToEncoding = $charset;
     }
 
     public function fetchOne()
@@ -107,7 +102,7 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
 
     private function convertStringEncoding(?string $value): ?string
     {
-        if (null === $this->charset) {
+        if (null === $this->charsetToEncoding) {
             return $value;
         }
 
@@ -115,6 +110,6 @@ final class Statement extends \Doctrine\DBAL\Driver\PDO\Statement
             return null;
         }
 
-        return \mb_convert_encoding($value, $this->charset, self::FROM_ENCODING);
+        return \mb_convert_encoding($value, $this->charsetToEncoding, self::CHARSET_FROM_ENCODING);
     }
 }
